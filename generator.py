@@ -1,6 +1,8 @@
 import random
 
+
 def get_unvisited_neighbors(maze, row, col):
+
     neighbors = []
 
     # UP
@@ -22,31 +24,37 @@ def get_unvisited_neighbors(maze, row, col):
     return neighbors
 
 
+def remove_wall(
+    maze,
+    current_row,
+    current_col,
+    next_row,
+    next_col,
+    direction
+):
 
-def remove_wall(maze, current_row, current_col,
-                next_row, next_col, direction):
-
+    # Remove top wall
     if direction == "UP":
         maze.northWall[current_row][current_col] = 0
 
+    # Remove bottom wall
     elif direction == "DOWN":
         maze.northWall[current_row + 1][current_col] = 0
 
+    # Remove left wall
     elif direction == "LEFT":
         maze.eastWall[current_row][current_col] = 0
 
+    # Remove right wall
     elif direction == "RIGHT":
         maze.eastWall[current_row][current_col + 1] = 0
-
-
-
 
 
 def generate_maze(maze):
 
     stack = []
 
-    # Random starting point
+    # Random starting cell
     current_row = random.randint(0, maze.rows - 1)
     current_col = random.randint(0, maze.cols - 1)
 
@@ -62,13 +70,13 @@ def generate_maze(maze):
 
         if neighbors:
 
-            # Save current position
+            # Save position for backtracking
             stack.append((current_row, current_col))
 
             # Pick random neighbor
             direction, next_row, next_col = random.choice(neighbors)
 
-            # Remove wall
+            # Remove wall between current and next
             remove_wall(
                 maze,
                 current_row,
@@ -78,7 +86,7 @@ def generate_maze(maze):
                 direction
             )
 
-            # Move mouse
+            # Move to next cell
             current_row = next_row
             current_col = next_col
 
@@ -90,5 +98,19 @@ def generate_maze(maze):
             current_row, current_col = stack.pop()
 
         else:
+
             # Finished
             break
+
+
+def create_entrance_and_exit(maze):
+
+    # Entrance (left boundary)
+    start_row = random.randint(0, maze.rows - 1)
+    maze.eastWall[start_row][0] = 0
+
+    # Exit (right boundary)
+    end_row = random.randint(0, maze.rows - 1)
+    maze.eastWall[end_row][maze.cols] = 0
+
+    return (start_row, 0), (end_row, maze.cols - 1)
