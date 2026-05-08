@@ -50,9 +50,11 @@ def gen_step(maze):
     return True
 
 def loops(maze):
+    # 1 in 20 walls (5%) removed to create cycles
     for r in range(1, maze.rows + 1):
         for c in range(1, maze.cols + 1):
             if random.random() < 0.05:
+                # Choose north or east wall to remove
                 w = random.choice(["N", "E"])
                 if w == "N" and r < maze.rows:
                     maze.up[r][c] = 0
@@ -60,11 +62,11 @@ def loops(maze):
                     maze.right[r][c] = 0
 
 def place_points(maze):
-    if maze.rows > 2 and maze.cols > 2:
-        maze.start = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
-        maze.end = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
-        while maze.end == maze.start:
-            maze.end = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
-    else:
-        maze.start = (1, 1)
-        maze.end = (maze.rows, maze.cols)
+    # Requirement: Opening at left edge to opening at right edge
+    start_row = random.randint(1, maze.rows)
+    end_row = random.randint(1, maze.rows)
+    maze.start = (start_row, 1)
+    maze.end = (end_row, maze.cols)
+    # eastWall[i][0] is the left edge, eastWall[i][cols] is the right edge
+    maze.right[start_row][0] = 0
+    maze.right[end_row][maze.cols] = 0
