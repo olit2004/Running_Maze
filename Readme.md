@@ -2,7 +2,7 @@
 
 A visually rich, real-time maze generation and solving simulation built with **Python** and **OpenGL**. 
 
-<a href="https://www.loom.com/share/cde54a5bca7946d3ae7080b6b2bb1b86" style="color:blue; font-size:24px> Demo video is here </a> 
+<a href="https://www.loom.com/share/cde54a5bca7946d3ae7080b6b2bb1b86" ; font-size:24px> Demo video  </a> 
 
 
 
