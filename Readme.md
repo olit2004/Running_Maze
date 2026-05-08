@@ -2,7 +2,8 @@
 
 A visually rich, real-time maze generation and solving simulation built with **Python** and **OpenGL**. 
 
-[![Interactive Maze Lab Demo](https://cdn.loom.com/sessions/thumbnails/cde54a5bca7946d3ae7080b6b2bb1b86-with-play.gif)](https://www.loom.com/share/cde54a5bca7946d3ae7080b6b2bb1b86)
+<a href="https://www.loom.com/share/cde54a5bca7946d3ae7080b6b2bb1b86" style="color:blue; font-size:24px> Demo video is here </a>
+
 
 This application is **fully interactive**: users can customize the maze dimensions (any number of rows and columns) and choose between different solving algorithms like **BFS** and **DFS** to compare their performance and behavior in real-time.
 
