@@ -1,77 +1,47 @@
 import random
 
+def get_moves(maze, r, c):
+    res = []
+    if r < maze.rows and maze.up[r][c] == 0:
+        res.append((r + 1, c))
+    if r > 1 and maze.up[r - 1][c] == 0:
+        res.append((r - 1, c))
+    if c > 1 and maze.right[r][c - 1] == 0:
+        res.append((r, c - 1))
+    if c < maze.cols and maze.right[r][c] == 0:
+        res.append((r, c + 1))
+    return res
 
-def get_possible_moves(maze, row, col):
+def solve_step(maze):
+    if maze.solved or not maze.built:
+        return False
 
-    moves = []
+    if not maze.trace:
+        maze.trace.append(maze.start)
+        maze.visited.add(maze.start)
+        maze.route = list(maze.trace)
+        return True
 
-    # UP
-    if row > 0 and maze.northWall[row][col] == 0:
-        moves.append((row - 1, col))
+    r, c = maze.trace[-1]
 
-    # DOWN
-    if row < maze.rows - 1 and maze.northWall[row + 1][col] == 0:
-        moves.append((row + 1, col))
+    if (r, c) == maze.end:
+        maze.solved = True
+        return False
 
-    # LEFT
-    if col > 0 and maze.eastWall[row][col] == 0:
-        moves.append((row, col - 1))
+    opts = get_moves(maze, r, c)
+    new_opts = [m for m in opts if m not in maze.visited]
 
-    # RIGHT
-    if col < maze.cols - 1 and maze.eastWall[row][col + 1] == 0:
-        moves.append((row, col + 1))
+    if new_opts:
+        nxt = random.choice(new_opts)
+        maze.trace.append(nxt)
+        maze.visited.add(nxt)
+    else:
+        maze.dead.add((r, c))
+        maze.trace.pop()
 
-    return moves
+    maze.route = list(maze.trace)
+    
+    if not maze.trace:
+        return False
 
-
-def solve_maze(maze, start, end):
-
-    stack = []
-
-    visited = set()
-
-    stack.append(start)
-
-    visited.add(start)
-
-    while stack:
-
-        current = stack[-1]
-
-        row, col = current
-
-        # Save current path for rendering
-        maze.solution_path = stack.copy()
-
-        # Goal reached
-        if current == end:
-            return True
-
-        possible_moves = get_possible_moves(
-            maze,
-            row,
-            col
-        )
-
-        # Ignore already visited cells
-        unvisited_moves = [
-            move for move in possible_moves
-            if move not in visited
-        ]
-
-        if unvisited_moves:
-
-            next_move = random.choice(unvisited_moves)
-
-            stack.append(next_move)
-
-            visited.add(next_move)
-
-        else:
-
-            # Dead end
-            maze.dead_ends.add(current)
-
-            stack.pop()
-
-    return False
+    return True

@@ -1,116 +1,70 @@
 import random
 
+def get_neighbors(maze, r, c):
+    res = []
+    if r < maze.rows and not maze.seen[r + 1][c]:
+        res.append(("UP", r + 1, c))
+    if r > 1 and not maze.seen[r - 1][c]:
+        res.append(("DOWN", r - 1, c))
+    if c > 1 and not maze.seen[r][c - 1]:
+        res.append(("LEFT", r, c - 1))
+    if c < maze.cols and not maze.seen[r][c + 1]:
+        res.append(("RIGHT", r, c + 1))
+    return res
 
-def get_unvisited_neighbors(maze, row, col):
+def cut(maze, r, c, dir):
+    if dir == "UP":
+        maze.up[r][c] = 0
+    elif dir == "DOWN":
+        maze.up[r - 1][c] = 0
+    elif dir == "LEFT":
+        maze.right[r][c - 1] = 0
+    elif dir == "RIGHT":
+        maze.right[r][c] = 0
 
-    neighbors = []
+def gen_step(maze):
+    if maze.built:
+        return False
 
-    # UP
-    if row > 0 and not maze.visited[row - 1][col]:
-        neighbors.append(("UP", row - 1, col))
+    if maze.curr is None:
+        maze.curr = (random.randint(1, maze.rows), random.randint(1, maze.cols))
+        maze.seen[maze.curr[0]][maze.curr[1]] = True
+        return True
 
-    # DOWN
-    if row < maze.rows - 1 and not maze.visited[row + 1][col]:
-        neighbors.append(("DOWN", row + 1, col))
+    r, c = maze.curr
+    nbs = get_neighbors(maze, r, c)
 
-    # LEFT
-    if col > 0 and not maze.visited[row][col - 1]:
-        neighbors.append(("LEFT", row, col - 1))
+    if nbs:
+        maze.stack.append((r, c))
+        dir, nr, nc = random.choice(nbs)
+        cut(maze, r, c, dir)
+        maze.curr = (nr, nc)
+        maze.seen[nr][nc] = True
+    elif maze.stack:
+        maze.curr = maze.stack.pop()
+    else:
+        maze.built = True
+        loops(maze)
+        return False
+    
+    return True
 
-    # RIGHT
-    if col < maze.cols - 1 and not maze.visited[row][col + 1]:
-        neighbors.append(("RIGHT", row, col + 1))
+def loops(maze):
+    for r in range(1, maze.rows + 1):
+        for c in range(1, maze.cols + 1):
+            if random.random() < 0.05:
+                w = random.choice(["N", "E"])
+                if w == "N" and r < maze.rows:
+                    maze.up[r][c] = 0
+                elif w == "E" and c < maze.cols:
+                    maze.right[r][c] = 0
 
-    return neighbors
-
-
-def remove_wall(
-    maze,
-    current_row,
-    current_col,
-    next_row,
-    next_col,
-    direction
-):
-
-    # Remove top wall
-    if direction == "UP":
-        maze.northWall[current_row][current_col] = 0
-
-    # Remove bottom wall
-    elif direction == "DOWN":
-        maze.northWall[current_row + 1][current_col] = 0
-
-    # Remove left wall
-    elif direction == "LEFT":
-        maze.eastWall[current_row][current_col] = 0
-
-    # Remove right wall
-    elif direction == "RIGHT":
-        maze.eastWall[current_row][current_col + 1] = 0
-
-
-def generate_maze(maze):
-
-    stack = []
-
-    # Random starting cell
-    current_row = random.randint(0, maze.rows - 1)
-    current_col = random.randint(0, maze.cols - 1)
-
-    maze.visited[current_row][current_col] = True
-
-    while True:
-
-        neighbors = get_unvisited_neighbors(
-            maze,
-            current_row,
-            current_col
-        )
-
-        if neighbors:
-
-            # Save position for backtracking
-            stack.append((current_row, current_col))
-
-            # Pick random neighbor
-            direction, next_row, next_col = random.choice(neighbors)
-
-            # Remove wall between current and next
-            remove_wall(
-                maze,
-                current_row,
-                current_col,
-                next_row,
-                next_col,
-                direction
-            )
-
-            # Move to next cell
-            current_row = next_row
-            current_col = next_col
-
-            maze.visited[current_row][current_col] = True
-
-        elif stack:
-
-            # Backtrack
-            current_row, current_col = stack.pop()
-
-        else:
-
-            # Finished
-            break
-
-
-def create_entrance_and_exit(maze):
-
-    # Entrance (left boundary)
-    start_row = random.randint(0, maze.rows - 1)
-    maze.eastWall[start_row][0] = 0
-
-    # Exit (right boundary)
-    end_row = random.randint(0, maze.rows - 1)
-    maze.eastWall[end_row][maze.cols] = 0
-
-    return (start_row, 0), (end_row, maze.cols - 1)
+def place_points(maze):
+    if maze.rows > 2 and maze.cols > 2:
+        maze.start = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
+        maze.end = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
+        while maze.end == maze.start:
+            maze.end = (random.randint(2, maze.rows - 1), random.randint(2, maze.cols - 1))
+    else:
+        maze.start = (1, 1)
+        maze.end = (maze.rows, maze.cols)
