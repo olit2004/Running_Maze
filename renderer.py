@@ -97,6 +97,17 @@ def draw_ui(ui_state):
     solve_color = (0.0, 0.5, 0.9) if ui_state['state'] == 'READY_TO_SOLVE' else (0.1, 0.2, 0.3)
     draw_rect(-0.9, -0.1, 0.4, 0.12, solve_color)
     draw_text(-0.78, -0.06, "SOLVE")
+
+    # Algorithm Selection
+    draw_text(-0.9, -0.18, "Algorithm:", (0.7, 0.7, 0.7))
+    
+    dfs_color = (0.0, 0.6, 0.3) if ui_state['algo'] == 'DFS' else (0.1, 0.2, 0.1)
+    draw_rect(-0.9, -0.3, 0.18, 0.08, dfs_color)
+    draw_text(-0.85, -0.28, "DFS")
+
+    bfs_color = (0.0, 0.6, 0.3) if ui_state['algo'] == 'BFS' else (0.1, 0.2, 0.1)
+    draw_rect(-0.68, -0.3, 0.18, 0.08, bfs_color)
+    draw_text(-0.63, -0.28, "BFS")
     
     status_map = {
         'IDLE': 'Ready to start',

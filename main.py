@@ -16,7 +16,8 @@ ui_state = {
     'rows_text': str(DEFAULT_ROWS),
     'cols_text': str(DEFAULT_COLS),
     'focus': None,
-    'state': 'IDLE' 
+    'state': 'IDLE',
+    'algo': 'DFS'
 }
 
 def update(value):
@@ -26,7 +27,7 @@ def update(value):
             ui_state['state'] = "READY_TO_SOLVE"
     
     elif ui_state['state'] == "SOLVING":
-        if not solve_step(maze):
+        if not solve_step(maze, ui_state['algo']):
             ui_state['state'] = "FINISHED"
 
     glutPostRedisplay()
@@ -63,6 +64,13 @@ def mouse_handler(button, state, x, y):
         elif -0.9 <= nx <= -0.5 and -0.1 <= ny <= 0.02:
             start_solving()
             ui_state['focus'] = None
+        
+        # Algo selection
+        elif -0.9 <= nx <= -0.72 and -0.3 <= ny <= -0.22:
+            ui_state['algo'] = 'DFS'
+        elif -0.68 <= nx <= -0.5 and -0.3 <= ny <= -0.22:
+            ui_state['algo'] = 'BFS'
+            
         else:
             ui_state['focus'] = None
         

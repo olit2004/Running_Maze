@@ -14,6 +14,8 @@ class Maze:
         self.route = []
         self.dead = set()
         self.visited = set()
+        self.queue = []
+        self.parents = {}
         self.solved = False
         self.start = None
         self.end = None
